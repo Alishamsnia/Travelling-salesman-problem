@@ -1,0 +1,439 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>project2</title><meta name="generator" content="MATLAB 9.11"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2023-05-21"><meta name="DC.source" content="project2.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; }
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+span.typesection { color:#A0522D }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><pre class="codeinput">close <span class="string">all</span>
+clear <span class="string">all</span>
+clc
+</pre><p><b>choosing parameters for genetic algorithm</b></p><pre class="codeinput">p = 100; <span class="comment">% population size base on genoms</span>
+cross_num = 20;
+mut_num = 20;
+selection_num = 60;
+</pre><p><b>creating cities coordinates</b></p><pre class="codeinput">x = 5; y = 5; z = 5;
+<span class="comment">% pick 20 of random points</span>
+x = [0 x*rand(1,19)]; <span class="comment">%x-coordinate of a point</span>
+y = [0 y*rand(1,19)]; <span class="comment">%y-coordinate of a point</span>
+z = [0 z*rand(1,19)]; <span class="comment">%z-coordinate of a point</span>
+
+<span class="comment">%inspect cities locatins</span>
+figure(<span class="string">'Name'</span>,<span class="string">'Cities'</span>);
+labels = (<span class="string">'A'</span> : <span class="string">'T'</span>)';
+scatter3(x, y, z, <span class="string">'MarkerFaceColor'</span>,<span class="string">'b'</span>,<span class="string">'MarkerEdgeColor'</span>,<span class="string">'b'</span>);
+text(x', y', z',labels);
+title(<span class="string">'Cities locations'</span>);
+</pre><img vspace="5" hspace="5" src="project2_01.png" alt=""> <p><b>assign initial random trail</b></p><pre class="codeinput">labels = [labels;<span class="string">'A'</span>];
+x_plot = [x';0];
+y_plot = [y';0];
+z_plot = [z';0];
+cities =  [x' y' z'];
+figure(<span class="string">'Name'</span>,<span class="string">'path'</span>);
+plot3(x_plot, y_plot, z_plot);
+text(x_plot, y_plot, z_plot,labels);
+title(<span class="string">'first trail before evolution'</span>);
+</pre><img vspace="5" hspace="5" src="project2_02.png" alt=""> <p><b>creating genetic algorithm loop</b></p><pre class="codeinput"><span class="keyword">for</span> gen = [1 100 500]
+    pop = population(p,20); <span class="comment">%initialize population</span>
+    cost = zeros(1,gen);
+    <span class="keyword">for</span> i = 1: gen
+        <span class="comment">%compute cost and evaluation</span>
+        E = evaluation(pop,cities);
+        cost(1,i) = min(E);
+        prev_pop = pop; <span class="comment">%save previous population</span>
+
+        <span class="comment">%make new generation</span>
+        pop(1:cross_num,:) = crossover(prev_pop,cross_num);
+        pop(cross_num+1:cross_num + mut_num ,:) = mutation(prev_pop,mut_num);
+        pop(cross_num + mut_num+1:p,:) = selection(prev_pop,E,selection_num);
+    <span class="keyword">end</span>
+
+    <span class="comment">%plot cost</span>
+    figure(<span class="string">'Name'</span>,<span class="string">'Cost'</span>);
+    plot(cost);
+    cost_label = sprintf(<span class="string">'cost after generation %d = %f'</span>,gen,cost(1,gen));
+    title(cost_label);
+    xlabel(<span class="string">'Generation'</span>);
+    ylabel(<span class="string">'Fitness funcion - distance of cities'</span>);
+
+    <span class="comment">%plot optimal path</span>
+    [x_opt y_opt z_opt]= changeCordinates(pop,cities);
+    figure(<span class="string">'Name'</span>,<span class="string">'path'</span>);
+    plot3(x_opt, y_opt, z_opt);
+    text(x_plot, y_plot, z_plot,labels);
+    xlabel(<span class="string">'X'</span>);
+    ylabel(<span class="string">'Y'</span>);
+    zlabel(<span class="string">'Z'</span>);
+    path_label = sprintf(<span class="string">'path after generation %d'</span>,gen);
+    title(path_label);
+<span class="keyword">end</span>
+
+<span class="comment">% population func</span>
+<span class="keyword">function</span> Y=population(n,nc)
+<span class="comment">% nc = number of cities</span>
+<span class="comment">% n = pop size</span>
+B=zeros(n,nc);
+<span class="keyword">for</span> j=1:n
+    A=1:1:nc;
+    [x y]=size(A);
+    <span class="keyword">for</span> i = 1:nc
+        r = randi(y);
+        B(j,i)=A(r);
+        A(:,r) = [];
+        [x y]=size(A);
+    <span class="keyword">end</span>
+<span class="keyword">end</span>
+Y = B;
+<span class="keyword">end</span>
+
+<span class="comment">% evaluation function</span>
+<span class="keyword">function</span> YY = evaluation(P,cities)
+<span class="comment">% P = population</span>
+[n ,nc] = size(P);
+Y = zeros(n,1);
+<span class="keyword">for</span> i = 1:n
+    A = P(i,:); <span class="comment">%get chromosome</span>
+    B = zeros(size(A));
+    <span class="keyword">for</span> j = 1:nc-1
+        x_diff = (cities(A(1,j),1)-cities(A(1,j+1),1))^2;
+        y_diff = (cities(A(1,j),2)-cities(A(1,j+1),2))^2;
+        z_diff = (cities(A(1,j),3)-cities(A(1,j+1),3))^2;
+        B(1,j) = sqrt(x_diff + y_diff + z_diff);
+    <span class="keyword">end</span>
+        x_diff = (cities(A(1,1),1)-cities(A(1,nc),1))^2;
+        y_diff = (cities(A(1,1),2)-cities(A(1,nc),2))^2;
+        z_diff = (cities(A(1,1),3)-cities(A(1,nc),3))^2;
+        B(1,j+1) = sqrt(x_diff + y_diff + z_diff);
+    Y(i,1) = sum(B);
+<span class="keyword">end</span>
+YY = Y;
+<span class="keyword">end</span>
+
+<span class="comment">% Crossover function</span>
+<span class="keyword">function</span> YY=crossover(X,n)
+<span class="comment">% X = population</span>
+<span class="comment">% n = number of chromosomes to be crossed</span>
+[x1 y1] = size(X);
+Y = zeros(n,y1);
+<span class="keyword">for</span> z = 1:n
+    B = X(randi(x1),:); <span class="comment">% select parent chromosome</span>
+    r1 = 1 + randi(y1-1);
+    C = B(1,1:r1);
+    B(:,1:r1) = [];  <span class="comment">% cut</span>
+    [x3 y3] = size(B);
+    B(1,y3+1:y1) = C;
+    Y(z,:) = B;
+<span class="keyword">end</span>
+YY = Y;
+<span class="keyword">end</span>
+
+<span class="comment">% mutation function</span>
+<span class="keyword">function</span> YY = mutation(X,n)
+<span class="comment">% X = population</span>
+<span class="comment">% n = number of chromosomes to be mutated</span>
+[x1 y1]=size(X);
+Y=zeros(n,y1);
+<span class="keyword">for</span> z=1:n
+    A=X(randi(x1),:); <span class="comment">% select parent chromosome</span>
+    r1=1+randi(y1-1,1,2);
+    <span class="keyword">while</span> r1(1)==r1(2)
+            r1=1+randi(y1-1,1,2);
+    <span class="keyword">end</span>
+    B=A(1,r1(1));
+    A(1,r1(1))=A(1,r1(2));
+    A(1,r1(2))=B;
+    Y(z,:)=A;
+<span class="keyword">end</span>
+YY = Y;
+<span class="keyword">end</span>
+
+<span class="comment">% Selection function</span>
+<span class="keyword">function</span> YY = selection(P,E,selection_num)
+<span class="comment">% P - popolation</span>
+A = zeros(selection_num,20);
+copy_E = E;
+<span class="keyword">for</span> i = 1:selection_num
+    [row c] = find(copy_E == min(copy_E));
+    row = row(1,1);
+
+    A(i,:) = P(row,:);
+    copy_E(row,1) = 0;
+<span class="keyword">end</span>
+ YY = A;
+<span class="keyword">end</span>
+
+<span class="comment">% change coordination function</span>
+<span class="keyword">function</span> [x,y,z] = changeCordinates(pop,cities)
+E = evaluation(pop,cities);
+[row c] = find(E == min(E));
+row = row(1,1);
+A = pop(row,:);
+B = zeros(size(cities));
+<span class="keyword">for</span> i = 1:20
+    B(i,:) = cities(A(1,i),:);
+<span class="keyword">end</span>
+x = B(:,1);
+y = B(:,2);
+z = B(:,3);
+
+x = [x;x(1)];
+y = [y;y(1)];
+z = [z;z(1)];
+<span class="keyword">end</span>
+</pre><img vspace="5" hspace="5" src="project2_03.png" alt=""> <img vspace="5" hspace="5" src="project2_04.png" alt=""> <img vspace="5" hspace="5" src="project2_05.png" alt=""> <img vspace="5" hspace="5" src="project2_06.png" alt=""> <img vspace="5" hspace="5" src="project2_07.png" alt=""> <img vspace="5" hspace="5" src="project2_08.png" alt=""> <p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2021b</a><br></p></div><!--
+##### SOURCE BEGIN #####
+close all
+clear all
+clc
+%%
+% *choosing parameters for genetic algorithm* 
+
+p = 100; % population size base on genoms
+cross_num = 20;
+mut_num = 20;
+selection_num = 60;
+
+%%
+% *creating cities coordinates* 
+
+x = 5; y = 5; z = 5;
+% pick 20 of random points
+x = [0 x*rand(1,19)]; %x-coordinate of a point
+y = [0 y*rand(1,19)]; %y-coordinate of a point
+z = [0 z*rand(1,19)]; %z-coordinate of a point
+
+%inspect cities locatins
+figure('Name','Cities');
+labels = ('A' : 'T')';
+scatter3(x, y, z, 'MarkerFaceColor','b','MarkerEdgeColor','b');
+text(x', y', z',labels);
+title('Cities locations');
+
+%%
+% *assign initial random trail*
+
+labels = [labels;'A'];
+x_plot = [x';0];
+y_plot = [y';0];
+z_plot = [z';0]; 
+cities =  [x' y' z'];
+figure('Name','path');
+plot3(x_plot, y_plot, z_plot);
+text(x_plot, y_plot, z_plot,labels);
+title('first trail before evolution');
+
+%%
+% *creating genetic algorithm loop*
+
+for gen = [1 100 500]    
+    pop = population(p,20); %initialize population
+    cost = zeros(1,gen);    
+    for i = 1: gen     
+        %compute cost and evaluation
+        E = evaluation(pop,cities);
+        cost(1,i) = min(E);        
+        prev_pop = pop; %save previous population
+        
+        %make new generation
+        pop(1:cross_num,:) = crossover(prev_pop,cross_num);
+        pop(cross_num+1:cross_num + mut_num ,:) = mutation(prev_pop,mut_num);
+        pop(cross_num + mut_num+1:p,:) = selection(prev_pop,E,selection_num); 
+    end
+
+    %plot cost
+    figure('Name','Cost');
+    plot(cost);
+    cost_label = sprintf('cost after generation %d = %f',gen,cost(1,gen));
+    title(cost_label);
+    xlabel('Generation');
+    ylabel('Fitness funcion - distance of cities');
+
+    %plot optimal path
+    [x_opt y_opt z_opt]= changeCordinates(pop,cities);
+    figure('Name','path');
+    plot3(x_opt, y_opt, z_opt);
+    text(x_plot, y_plot, z_plot,labels);
+    xlabel('X');
+    ylabel('Y');
+    zlabel('Z');
+    path_label = sprintf('path after generation %d',gen);
+    title(path_label);
+end
+
+% population func
+function Y=population(n,nc)
+% nc = number of cities
+% n = pop size
+B=zeros(n,nc);
+for j=1:n
+    A=1:1:nc;   
+    [x y]=size(A);
+    for i = 1:nc
+        r = randi(y);
+        B(j,i)=A(r);
+        A(:,r) = [];
+        [x y]=size(A);
+    end
+end
+Y = B;
+end
+
+% evaluation function
+function YY = evaluation(P,cities)
+% P = population
+[n ,nc] = size(P);
+Y = zeros(n,1);
+for i = 1:n
+    A = P(i,:); %get chromosome
+    B = zeros(size(A));
+    for j = 1:nc-1
+        x_diff = (cities(A(1,j),1)-cities(A(1,j+1),1))^2;
+        y_diff = (cities(A(1,j),2)-cities(A(1,j+1),2))^2;
+        z_diff = (cities(A(1,j),3)-cities(A(1,j+1),3))^2;
+        B(1,j) = sqrt(x_diff + y_diff + z_diff);
+    end
+        x_diff = (cities(A(1,1),1)-cities(A(1,nc),1))^2;
+        y_diff = (cities(A(1,1),2)-cities(A(1,nc),2))^2;
+        z_diff = (cities(A(1,1),3)-cities(A(1,nc),3))^2;
+        B(1,j+1) = sqrt(x_diff + y_diff + z_diff);    
+    Y(i,1) = sum(B);
+end
+YY = Y;
+end
+
+% Crossover function
+function YY=crossover(X,n)
+% X = population
+% n = number of chromosomes to be crossed
+[x1 y1] = size(X);
+Y = zeros(n,y1);
+for z = 1:n
+    B = X(randi(x1),:); % select parent chromosome
+    r1 = 1 + randi(y1-1);
+    C = B(1,1:r1);
+    B(:,1:r1) = [];  % cut
+    [x3 y3] = size(B);
+    B(1,y3+1:y1) = C;
+    Y(z,:) = B;
+end
+YY = Y;
+end
+
+% mutation function
+function YY = mutation(X,n)
+% X = population
+% n = number of chromosomes to be mutated
+[x1 y1]=size(X);
+Y=zeros(n,y1);
+for z=1:n
+    A=X(randi(x1),:); % select parent chromosome
+    r1=1+randi(y1-1,1,2);
+    while r1(1)==r1(2) 
+            r1=1+randi(y1-1,1,2);
+    end
+    B=A(1,r1(1));
+    A(1,r1(1))=A(1,r1(2));
+    A(1,r1(2))=B;
+    Y(z,:)=A;
+end
+YY = Y;
+end
+
+% Selection function
+function YY = selection(P,E,selection_num)
+% P - popolation
+A = zeros(selection_num,20);
+copy_E = E;
+for i = 1:selection_num
+    [row c] = find(copy_E == min(copy_E));
+    row = row(1,1);
+
+    A(i,:) = P(row,:);
+    copy_E(row,1) = 0;
+end
+ YY = A;
+end
+
+% change coordination function
+function [x,y,z] = changeCordinates(pop,cities)
+E = evaluation(pop,cities);
+[row c] = find(E == min(E));
+row = row(1,1);
+A = pop(row,:);
+B = zeros(size(cities));
+for i = 1:20
+    B(i,:) = cities(A(1,i),:);
+end
+x = B(:,1);
+y = B(:,2);
+z = B(:,3);
+
+x = [x;x(1)];
+y = [y;y(1)];
+z = [z;z(1)];
+end
+
+##### SOURCE END #####
+--></body></html>
